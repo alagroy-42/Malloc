@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alagroy- <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/07 14:14:32 by alagroy-          #+#    #+#             */
-/*   Updated: 2019/09/09 14:40:45 by alagroy-         ###   ########.fr       */
+/*   Updated: 2021/02/18 11:24:23 by alagroy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,11 @@
 # include <unistd.h>
 # include <limits.h>
 # include "ft_printf.h"
+
+# ifndef OPEN_MAX
+#  define OPEN_MAX 4096
+# endif
+
 # define BUFF_SIZE 1
 
 typedef struct	s_list

@@ -6,7 +6,7 @@
 #    By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/02/17 16:43:31 by alagroy-          #+#    #+#              #
-#    Updated: 2021/02/17 17:03:04 by alagroy-         ###   ########.fr        #
+#    Updated: 2021/02/18 11:41:37 by alagroy-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,40 +15,46 @@ ifeq ($(HOSTTYPE),)
 endif
 
 NAME = libft_malloc_$(HOSTTYPE).so
+LIBNAME = libft_malloc.so
 
 CC = clang
 
-SRCS_FILES = 
+SRCS_FILES = malloc.c
 
-vpath %.c ./srcs/
+SRCS_PATH = ./srcs/
 
-INCLUDES_PATH = ./includes/
+INCLUDES_PATH = ./includes/ $(LIBFT_DIR)includes
 
-HEADERS += 
+HEADERS += libft_malloc.h
 
 LIBFT = ./libft/libft.a
 LIBFT_DIR = ./libft/
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_FILES))
 
-OBJ_PATH = ./.obj/
-
-OBJ = $(patsubst %.c, $(OBJ_PATH)%.o, $(SRCS_FILES))
+OBJ_PATH = ./.objs/
+OBJ_FILES = $(SRCS_FILES:.c=.o)
+OBJ = $(addprefix $(OBJ_PATH), $(OBJ_FILES))
 
 CFLAGS = -Wall -Werror -Wextra -g
+CFLAGS += $(addprefix -I , $(INCLUDES_PATH))
 
 all: $(OBJ_PATH) $(NAME)
 
 $(OBJ_PATH):
 	mkdir $@
 
-$(NAME): $(OBJ) $(LIBFT)
+$(LIBFT):
+	make -C $(LIBFT_DIR)
+
+$(NAME): $(LIBFT) $(OBJ)
 	ar rcs $@ $^
 	printf "\n\033[0;32m[libft_malloc] Linking [OK]\n"
+	ln -s $(NAME) $(LIBNAME)
 
-$(OBJ): $(OBJ_PATH)%.o: %.c $(HEADER) Makefile
+$(OBJ_PATH)%.o: $(SRCS_PATH)%.c $(HEADER) Makefile
+	$(CC) $(CFLAGS) -c $< -o $@
 	printf "\033[0;32m[libft_malloc] Compilation [$<]                 \r\033[0m"
-	$(CC) $(CFLAGS) -I$(INCLUDES) -c $< -o $@
 
 clean:
 	$(RM) -Rf $(OBJ_PATH)
@@ -59,6 +65,9 @@ fclean: clean
 	$(RM) $(NAME)
 	make -C $(LIBFT_DIR) $@
 	printf "\033[0;31m[libft_malloc] Fclean [OK]\n"
+
+test: $(NAME)
+	$(CC) $(CFLAGS) main.c -L $(NAME) -o test_$(LIBNAME)
 
 re: fclean all
 
