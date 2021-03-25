@@ -6,7 +6,7 @@
 #    By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/02/17 16:43:31 by alagroy-          #+#    #+#              #
-#    Updated: 2021/02/18 11:41:37 by alagroy-         ###   ########.fr        #
+#    Updated: 2021/03/25 16:19:52 by alagroy-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ LIBNAME = libft_malloc.so
 
 CC = clang
 
-SRCS_FILES = malloc.c
+SRCS_FILES = malloc.c malloc_tools.c zone_tools.c alloc_tools.c
 
 SRCS_PATH = ./srcs/
 
@@ -36,7 +36,7 @@ OBJ_PATH = ./.objs/
 OBJ_FILES = $(SRCS_FILES:.c=.o)
 OBJ = $(addprefix $(OBJ_PATH), $(OBJ_FILES))
 
-CFLAGS = -Wall -Werror -Wextra -g
+CFLAGS = -Wall -Werror -Wextra -g #-fsanitize=address
 CFLAGS += $(addprefix -I , $(INCLUDES_PATH))
 
 all: $(OBJ_PATH) $(NAME)
@@ -47,9 +47,10 @@ $(OBJ_PATH):
 $(LIBFT):
 	make -C $(LIBFT_DIR)
 
-$(NAME): $(LIBFT) $(OBJ)
-	ar rcs $@ $^
+$(NAME): $(OBJ) $(LIBFT)
+	$(CC) $(CFLAGS) -L $(LIBFT_DIR) -fPIC -lft -shared $(SRCS) -o $@
 	printf "\n\033[0;32m[libft_malloc] Linking [OK]\n"
+	$(RM) $(LIBNAME)
 	ln -s $(NAME) $(LIBNAME)
 
 $(OBJ_PATH)%.o: $(SRCS_PATH)%.c $(HEADER) Makefile
@@ -62,12 +63,13 @@ clean:
 	printf "\033[0;31m[libft_malloc] Clean [OK]\n"
 
 fclean: clean
+	$(RM) $(LIBNAME)
 	$(RM) $(NAME)
 	make -C $(LIBFT_DIR) $@
 	printf "\033[0;31m[libft_malloc] Fclean [OK]\n"
 
 test: $(NAME)
-	$(CC) $(CFLAGS) main.c -L $(NAME) -o test_$(LIBNAME)
+	$(CC) $(CFLAGS) main.c $(NAME) -o test_libft_malloc
 
 re: fclean all
 

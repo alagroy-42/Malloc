@@ -4,3 +4,4 @@
 *.dSYM
 a.out
 .vscode
+.objs
