@@ -6,7 +6,7 @@
 /*   By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/17 20:29:38 by alagroy-          #+#    #+#             */
-/*   Updated: 2021/02/18 14:16:04 by alagroy-         ###   ########.fr       */
+/*   Updated: 2021/03/25 16:05:42 by alagroy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,29 +20,46 @@
 # include <sys/resource.h>
 
 # define TINY  256
-# define SMALL 1024
-# define LARGE 4096
-
-# define TINY_ZONE 49152
-# define SMALL_ZONE 102400
+# define SMALL 4096
+# define LARGE 4097
+# define NB_ALLOCT 250
+# define NB_ALLOCS 100
 
 typedef	unsigned long long	t_zsize;
-typedef	char				t_ztype;
+typedef	int					t_ztype;
+
+typedef struct				s_block
+{
+	uint8_t			free;
+	size_t			size;
+	struct s_block	*next;
+}							t_block;
+
+# define META_SIZE sizeof(t_block)
 
 typedef struct				s_zone
 {
-	t_zsize	size;
-	t_ztype	type;
-	t_list	*alloc_list;
-	void	*addr;
+	t_zsize			size;
+	t_ztype			type;
+	void			*addr;
+	struct s_zone	*next;
 }							t_zone;
 
-typedef struct				s_alloc
+typedef struct				s_malloc
 {
-	void	*addr;
-	size_t	size;
-}							t_alloc;
+	t_zone			*zones;
+	int				pagesize;
+	rlim_t			rlimit;
+	rlim_t			nb_pages;
+}							t_malloc;
+
+t_malloc					g_malloc = {0, 0, 0, 0};
 
 void						*malloc(size_t size);
+int							init_malloc(size_t size);
+void						*mmap_safe(size_t size);
+t_zone						*create_zone(size_t size);
+int							get_malloc_type(size_t size);
+void						*allocate_block(size_t size);
 
 #endif
