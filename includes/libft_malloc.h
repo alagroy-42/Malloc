@@ -6,7 +6,7 @@
 /*   By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/17 20:29:38 by alagroy-          #+#    #+#             */
-/*   Updated: 2021/03/25 16:05:42 by alagroy-         ###   ########.fr       */
+/*   Updated: 2021/03/29 17:11:38 by alagroy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ typedef struct				s_malloc
 	rlim_t			nb_pages;
 }							t_malloc;
 
-t_malloc					g_malloc = {0, 0, 0, 0};
+t_malloc					g_malloc;
 
 void						*malloc(size_t size);
 int							init_malloc(size_t size);

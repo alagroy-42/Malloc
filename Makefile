@@ -6,7 +6,7 @@
 #    By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/02/17 16:43:31 by alagroy-          #+#    #+#              #
-#    Updated: 2021/03/25 16:19:52 by alagroy-         ###   ########.fr        #
+#    Updated: 2021/03/29 17:11:34 by alagroy-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,7 +36,7 @@ OBJ_PATH = ./.objs/
 OBJ_FILES = $(SRCS_FILES:.c=.o)
 OBJ = $(addprefix $(OBJ_PATH), $(OBJ_FILES))
 
-CFLAGS = -Wall -Werror -Wextra #-g -fsanitize=address
+CFLAGS = -Wall -Werror -Wextra -g #-fsanitize=address
 CFLAGS += $(addprefix -I , $(INCLUDES_PATH))
 
 all: $(OBJ_PATH) $(NAME)
@@ -48,7 +48,7 @@ $(LIBFT):
 	make -C $(LIBFT_DIR)
 
 $(NAME): $(OBJ) $(LIBFT)
-	$(CC) $(CFLAGS) -L $(LIBFT_DIR) -lft -shared $(OBJS) -o $@
+	$(CC) $(CFLAGS) -L $(LIBFT_DIR) -fPIC -lft -shared $(SRCS) -o $@
 	printf "\n\033[0;32m[libft_malloc] Linking [OK]\n"
 	$(RM) $(LIBNAME)
 	ln -s $(NAME) $(LIBNAME)

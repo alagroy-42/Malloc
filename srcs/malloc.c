@@ -6,11 +6,13 @@
 /*   By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/17 21:50:53 by alagroy-          #+#    #+#             */
-/*   Updated: 2021/03/25 16:55:36 by alagroy-         ###   ########.fr       */
+/*   Updated: 2021/03/29 17:11:32 by alagroy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft_malloc.h"
+
+t_malloc g_malloc = {0, 0, 0, 0};
 
 void	*malloc(size_t size)
 {
