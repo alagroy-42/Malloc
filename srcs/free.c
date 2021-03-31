@@ -1,25 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_free_2da.c                                      :+:      :+:    :+:   */
+/*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/03/12 12:19:27 by alagroy-          #+#    #+#             */
-/*   Updated: 2019/04/12 09:21:56 by alagroy-         ###   ########.fr       */
+/*   Created: 2021/03/30 12:44:02 by alagroy-          #+#    #+#             */
+/*   Updated: 2021/04/06 16:07:36 by alagroy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "libft_malloc.h"
 
-void	ft_free_2dstr(char **array)
+void		free_block(t_block *ptr)
 {
-	int	i;
+	t_block *next;
 
-	if (!array)
+	if (!integrity_check(ptr) || !ptr->free)
 		return ;
-	i = -1;
-	while (array[++i])
-		free(array[i]);
-	free(array);
+	ptr->free = 1;
+	next = ptr->next;
+	if (!integrity_check(next) || !next->free)
+		return ;
+	ptr->next = next;
+	ptr->size += next->size + META_SIZE;
+	next->magic = 0;
+}
+
+void		free(void *ptr)
+{
+	write(1, "free\n", 5);
+	if (!ptr)
+		return ;
+	free_block(ptr - META_SIZE);
 }

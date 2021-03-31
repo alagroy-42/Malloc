@@ -1,34 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_2dstrdel.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/02/18 11:41:53 by alagroy-          #+#    #+#             */
-/*   Updated: 2021/03/31 16:47:01 by alagroy-         ###   ########.fr       */
+/*   Created: 2019/03/12 12:19:27 by alagroy-          #+#    #+#             */
+/*   Updated: 2021/02/25 13:10:53 by alagroy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft_malloc.h"
+#include "libft.h"
 
-int		main(void)
+void	ft_2dstrdel(char ***array)
 {
-	char *str;
-	char *str2;
-	
-	write(1, "beginning\n", 11);
-	str = ft_strdup("lolilol");
-	str2 = ft_strdup("lolilol");
-	write(1, "free 1\n", 8);
-	free(str);
-	write(1, "free 2\n", 8);
-	free(str2);
-	str = ft_strdup("lolilol");
-	str2 = ft_strdup("lolilol");
-	write(1, "free 3\n", 8);
-	free(str);
-	write(1, "free 4\n", 8);
-	free(str2);
-	return 0;
+	int	i;
+
+	if (!array || !*array)
+		return ;
+	i = -1;
+	while ((*array)[++i])
+		free((*array)[i]);
+	free(*array);
+	*array = NULL;
 }

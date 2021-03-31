@@ -6,7 +6,7 @@
 /*   By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/24 14:32:31 by alagroy-          #+#    #+#             */
-/*   Updated: 2021/03/25 14:59:30 by alagroy-         ###   ########.fr       */
+/*   Updated: 2021/04/06 12:53:43 by alagroy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int		get_new_zone_size(size_t size)
 
 	if (size > SMALL)
 		return (size);
-	if (size <= (TINY + META_SIZE))
+	if (size <= TINY)
 	{
 		min = 250 * (TINY + META_SIZE);
 		if (!(min % g_malloc.pagesize))
@@ -42,7 +42,7 @@ t_zone	*find_new_zone_addr(void)
 
 	i = -1;
 	zones = g_malloc.zones;
-	while (zones[++i].size)
+	while (zones && zones[++i].size)
 	{
 		if (zones[i].next)
 		{
@@ -63,17 +63,15 @@ t_zone	*find_new_zone_addr(void)
 
 t_zone	*create_zone(size_t size)
 {
-	int		i;
 	t_zone	*new_zone;
 	t_block	block;
 
-	i = -1;
 	new_zone = find_new_zone_addr();
 	new_zone->size = get_new_zone_size(size);
 	new_zone->type = get_malloc_type(size);
 	new_zone->next = NULL;
 	new_zone->addr = mmap_safe(new_zone->size);
-	block = (t_block){1, new_zone->size - META_SIZE, 0};
+	block = (t_block){MALLOC_MAGIC, 1, new_zone->size - META_SIZE, NULL};
 	ft_memcpy(new_zone->addr, &block, META_SIZE);
 	return (new_zone);
 }
