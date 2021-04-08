@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/04/01 16:19:10 by alagroy-          #+#    #+#             */
-/*   Updated: 2021/04/06 15:04:07 by alagroy-         ###   ########.fr       */
+/*   Created: 2021/04/08 17:28:12 by alagroy-          #+#    #+#             */
+/*   Updated: 2021/04/08 18:19:13 by alagroy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ void						print_addr(void *ptr)
 {
 	unsigned char	addr[18];
 	unsigned char	buf[8];
-	unsigned char	convert[] = "0123456789ABCDEF";
-	int		i;
+	unsigned char	convert[] = "0123456789abcdef";
+	int				i;
 
 	i = 0;
 	ft_memcpy(buf, &ptr, sizeof(void *));
@@ -31,42 +31,39 @@ void						print_addr(void *ptr)
 	write(1, addr, 18);
 }
 
-static void					print_zone(t_zone *zone)
-{
-	if (zone->type == TINY)
-		ft_putstr("TINY : ");
-	if (zone->type == SMALL)
-		ft_putstr("SMALL : ");
-	if (zone->type == LARGE)
-		ft_putstr("LARGE : ");
-	print_addr(zone->addr);
-	ft_putchar('\n');
-}
-
-static void					print_alloc(t_block *block)
+static void					display_block(t_block *block)
 {
 	print_addr(block + 1);
 	ft_putstr(" - ");
-	print_addr((void *)block + META_SIZE + block->size);
+	print_addr((void *)block + block->size + META_SIZE);
 	ft_putstr(" : ");
 	ft_putull(block->size);
 	ft_putendl(" bytes");
 }
 
-static unsigned long long	print_zone_content(t_zone *zone)
+static unsigned long long	display_zone(t_zone *zone)
 {
-	t_block				*block;
-	unsigned long long	total;
+	t_block *block;
+	int		type;
+	int		total;
 
-	block = zone->addr;
 	total = 0;
-	print_zone(zone);
+	type = zone->type;
+	if (type == TINY)
+		ft_putstr("TINY : ");
+	else if (type == SMALL)
+		ft_putstr("SMALL : ");
+	else
+		ft_putstr("LARGE : ");
+	print_addr(zone);
+	ft_putchar('\n');
+	block = (t_block *)(zone + 1);
 	while (block)
 	{
-		if (integrity_check(block) && !block->free)
+		if (!block->free)
 		{
-			print_alloc(block);
 			total += block->size;
+			display_block(block);
 		}
 		block = block->next;
 	}
@@ -75,23 +72,18 @@ static unsigned long long	print_zone_content(t_zone *zone)
 
 void						show_alloc_memory(void)
 {
+	t_zone				**zone;
+	t_zone				**end;
 	int					i;
 	unsigned long long	total;
-	t_zone				*zones;
 
-	i = -1;
-	zones = g_malloc.zones;
+	i = 0;
 	total = 0;
-	while (zones && zones[++i].size)
-	{
-		total += print_zone_content(zones + i);
-		if (zones[i].next)
-		{
-			zones = zones[i].next;
-			i = -1;
-		}
-	}
+	zone = g_malloc.zones;
+	end = (void *)zone + *(size_t *)zone;
+	while (zone[++i] && zone + i < end)
+		total += display_zone(zone[i]);
 	ft_putstr("Total : ");
 	ft_putull(total);
-	ft_putchar('\n');
+	ft_putendl(" bytes");
 }

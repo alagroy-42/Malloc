@@ -5,60 +5,82 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/04/01 15:15:24 by alagroy-          #+#    #+#             */
-/*   Updated: 2021/04/06 15:09:45 by alagroy-         ###   ########.fr       */
+/*   Created: 2021/04/08 13:05:06 by alagroy-          #+#    #+#             */
+/*   Updated: 2021/04/08 16:05:31 by alagroy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft_malloc.h"
 
-static void	*extend_block(void *ptr, size_t size)
+static t_block	*increase_block_mem(t_block *block, size_t size)
 {
-	t_block	*block;
+	t_block	*next;
 	t_block	*new_block;
+	void	*ptr;
 
-	block = ptr - META_SIZE;
-	if (block->size + block->next->size - size <= META_SIZE)
+	ptr = block + 1;
+	next = block->next;
+	if (!next->free || block->size + next->size + META_SIZE < size)
+	{
+		if (!(next = malloc(size)))
+			return (NULL);
+		ft_memcpy(next, ptr, block->size);
+		free(ptr);
+		return (next + 1);
+	}
+	if (block->size + next->size - size <= 0)
 	{
 		block->size = size;
-		block->next = block->next->next;
-		return (ptr);
+		return (block);
 	}
-	new_block = ptr + size;
-	ft_memcpy(new_block, ptr + block->size, META_SIZE);
-	new_block->size -= size - block->size;
+	new_block = (void *)block + size;
+	ft_memcpy(block, new_block, META_SIZE);
+	new_block->size -= size + META_SIZE;
+	new_block->free = 1;
+	block->size = size;
 	block->next = new_block;
-	return (ptr);
+	return (block);
 }
 
-static void	*real_realloc(void *ptr, size_t size)
+static t_block	*reduce_block_mem(t_block *block, size_t size)
 {
-	t_block	*block;
-	void	*new_ptr;
+	t_block	*new_block;
 
+	if (block->size - size <= META_SIZE)
+	{
+		block->size = size;
+		return (block);
+	}
+	new_block = (void *)block + size;
+	ft_memcpy(block, new_block, META_SIZE);
+	new_block->size -= size + META_SIZE;
+	new_block->free = 1;
+	block->size = size;
+	block->next = new_block;
+	return (block);
+}
+
+void			*realloc(void *ptr, size_t size)
+{
+	t_block		*block;
+
+	ft_putendl("realloc");
 	block = ptr - META_SIZE;
-	if (block->next && block->next->free
-			&& block->size + block->next->size + META_SIZE >= size)
-		return (extend_block(ptr, size));
-	if (!(new_ptr = malloc(size)))
-		return (NULL);
-	ft_memcpy(new_ptr, ptr, block->size);
-	free(ptr);
-	return (ptr);	
-}
-
-void		*realloc(void *ptr, size_t size)
-{
-	write(1, "realloc\n", 8);
-	// show_alloc_memory();
-	if (!ptr)
+	if (!ptr || !integrity_check(block) || block->free)
 		return (malloc(size));
-	if (!integrity_check(ptr - META_SIZE) || ((t_block *)ptr - 1)->free)
-		return (NULL);
 	if (!size)
 	{
 		free(ptr);
-		return (malloc(0));
+		return (NULL);
 	}
-	return (real_realloc(ptr, size));
+	if (block->size > size)
+		block = reduce_block_mem(block, size);
+	else
+		block = increase_block_mem(block, size);
+	if (!block)
+		return (NULL);
+	if (block == (t_block *)(ptr - META_SIZE))
+		return (ptr);
+	free(ptr);
+	return (block + 1);
 }

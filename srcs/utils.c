@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   malloc_tools.c                                     :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/03/24 13:26:23 by alagroy-          #+#    #+#             */
-/*   Updated: 2021/04/06 13:05:00 by alagroy-         ###   ########.fr       */
+/*   Created: 2021/04/07 14:26:11 by alagroy-          #+#    #+#             */
+/*   Updated: 2021/04/08 16:09:31 by alagroy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	*mmap_safe(size_t size)
 {
-	int		nb_pages;
+	size_t	nb_pages;
 	void	*ptr;
 
 	nb_pages = size / g_malloc.pagesize;
@@ -30,7 +30,25 @@ void	*mmap_safe(size_t size)
 	return (ptr);
 }
 
-int		get_malloc_type(size_t size)
+int		integrity_check(t_block *block)
+{
+	t_zone	**zone;
+	void	*end;
+	int		is_mine;
+	int		i;
+
+	i = 0;
+	is_mine = 0;
+	zone = g_malloc.zones;
+	end = zone + *(uint64_t *)(zone);
+	while (!is_mine && zone[++i] && (void *)(zone + i) < end)
+		if ((void *)block > (void *)zone[i]
+				&& (void *)block < (void *)zone[i] + zone[i]->size)
+			is_mine = 1;
+	return (is_mine && (block->magic == MALLOC_MAGIC));
+}
+
+size_t	get_malloc_type(size_t size)
 {
 	if (size > SMALL)
 		return (LARGE);
@@ -43,11 +61,12 @@ int		init_malloc(size_t size)
 {
 	struct rlimit	limit;
 
-	g_malloc.pagesize = getpagesize();
+	g_malloc.pagesize = (size_t)getpagesize();
 	getrlimit(RLIMIT_DATA, &limit);
 	g_malloc.rlimit = limit.rlim_cur;
 	if (!(g_malloc.zones = mmap_safe(g_malloc.pagesize)))
 		return (EXIT_FAILURE);
+	*(g_malloc.zones) = (t_zone *)g_malloc.pagesize;
 	if (!(create_zone(size)))
 		return (EXIT_FAILURE);
 	return (EXIT_SUCCESS);

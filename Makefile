@@ -6,7 +6,7 @@
 #    By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/02/17 16:43:31 by alagroy-          #+#    #+#              #
-#    Updated: 2021/04/02 12:57:22 by alagroy-         ###   ########.fr        #
+#    Updated: 2021/04/08 17:28:57 by alagroy-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,9 +19,7 @@ LIBNAME = libft_malloc.so
 
 CC = clang
 
-SRCS_FILES = malloc.c malloc_tools.c zone_tools.c alloc_tools.c free.c \
-				realloc.c show_alloc_memory.c
-
+SRCS_FILES = malloc.c utils.c zones.c alloc.c free.c realloc.c show_alloc_memory.c
 SRCS_PATH = ./srcs/
 
 INCLUDES_PATH = ./includes/ $(LIBFT_DIR)includes
@@ -49,7 +47,7 @@ $(OBJ_PATH):
 $(LIBFT):
 	make -C $(LIBFT_DIR)
 
-$(NAME): $(OBJ) $(LIBFT)
+$(NAME): $(LIBFT) $(OBJ)
 	$(CC) $(CFLAGS) -L $(LIBFT_DIR) -lft -shared $(OBJ) -o $@
 	printf "\n\033[0;32m[libft_malloc] Linking [OK]\n"
 	$(RM) $(LIBNAME)
