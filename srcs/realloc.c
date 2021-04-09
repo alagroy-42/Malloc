@@ -6,7 +6,7 @@
 /*   By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/08 13:05:06 by alagroy-          #+#    #+#             */
-/*   Updated: 2021/04/08 16:05:31 by alagroy-         ###   ########.fr       */
+/*   Updated: 2021/04/09 15:28:29 by alagroy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static t_block	*increase_block_mem(t_block *block, size_t size)
 
 	ptr = block + 1;
 	next = block->next;
-	if (!next->free || block->size + next->size + META_SIZE < size)
+	if (!next || !next->free || block->size + next->size + META_SIZE < size)
 	{
 		if (!(next = malloc(size)))
 			return (NULL);
@@ -64,7 +64,6 @@ void			*realloc(void *ptr, size_t size)
 {
 	t_block		*block;
 
-	ft_putendl("realloc");
 	block = ptr - META_SIZE;
 	if (!ptr || !integrity_check(block) || block->free)
 		return (malloc(size));

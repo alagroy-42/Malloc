@@ -6,7 +6,7 @@
 /*   By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/17 20:29:38 by alagroy-          #+#    #+#             */
-/*   Updated: 2021/04/08 12:45:54 by alagroy-         ###   ########.fr       */
+/*   Updated: 2021/04/09 15:27:18 by alagroy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,8 @@ void						*allocate_block(size_t size);
 int							integrity_check(t_block *ptr);
 void						show_alloc_memory(void);
 void						print_addr(void *ptr);
+void						display_block(t_block *block);
 void						*calloc(size_t count, size_t size);
+void		*reallocf(void *ptr, size_t size);
 
 #endif

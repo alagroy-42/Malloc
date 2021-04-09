@@ -6,7 +6,7 @@
 /*   By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/08 17:28:12 by alagroy-          #+#    #+#             */
-/*   Updated: 2021/04/08 18:19:13 by alagroy-         ###   ########.fr       */
+/*   Updated: 2021/04/09 15:12:50 by alagroy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void						print_addr(void *ptr)
 	write(1, addr, 18);
 }
 
-static void					display_block(t_block *block)
+void						display_block(t_block *block)
 {
 	print_addr(block + 1);
 	ft_putstr(" - ");

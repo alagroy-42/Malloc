@@ -6,7 +6,7 @@
 /*   By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/07 14:23:18 by alagroy-          #+#    #+#             */
-/*   Updated: 2021/04/08 16:15:33 by alagroy-         ###   ########.fr       */
+/*   Updated: 2021/04/09 16:05:46 by alagroy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ void			*calloc(size_t count, size_t size)
 
 void			*malloc(size_t size)
 {
-	ft_putendl("malloc");
 	if (!size)
 		return (NULL);
 	if (!g_malloc.zones)
