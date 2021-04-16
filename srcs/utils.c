@@ -6,7 +6,7 @@
 /*   By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/07 14:26:11 by alagroy-          #+#    #+#             */
-/*   Updated: 2021/04/09 16:08:43 by alagroy-         ###   ########.fr       */
+/*   Updated: 2021/04/20 11:15:13 by alagroy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,24 +30,6 @@ void	*mmap_safe(size_t size)
 	return (ptr);
 }
 
-int		integrity_check(t_block *block)
-{
-	t_zone	**zone;
-	void	*end;
-	int		is_mine;
-	int		i;
-
-	i = 0;
-	is_mine = 0;
-	zone = g_malloc.zones;
-	end = zone + *(uint64_t *)(zone);
-	while (!is_mine && zone[++i] && (void *)(zone + i) < end)
-		if ((void *)block > (void *)zone[i]
-				&& (void *)block < (void *)zone[i] + zone[i]->size)
-			is_mine = 1;
-	return (is_mine && (block->magic == MALLOC_MAGIC));
-}
-
 size_t	get_malloc_type(size_t size)
 {
 	if (size > SMALL)
@@ -55,6 +37,36 @@ size_t	get_malloc_type(size_t size)
 	if (size <= TINY)
 		return (TINY);
 	return (SMALL);
+}
+
+/*
+**	ZONE_SIZE + META_SIZE is aligned so we just have to align the next block
+**	to get only aligned blocks
+*/
+
+size_t	align_size(size_t size)
+{
+	if (!((size + META_SIZE) % ALIGN))
+		return (size);
+	return (size + (ALIGN - ((size + META_SIZE) % ALIGN)));
+}
+
+t_zone	*get_block_zone(t_block *block)
+{
+	int		i;
+	t_zone	**zone;
+	t_zone	**end;
+
+	i = 0;
+	zone = g_malloc.zones;
+	end = (void *)zone + *(uint64_t *)zone;
+	while (zone + ++i < end && zone[i])
+	{
+		if ((t_zone *)block > zone[i] && (void *)block < (void *)zone[i]
+				+ zone[i]->size)
+			return (zone[i]);
+	}
+	return (NULL);
 }
 
 int		init_malloc(size_t size)

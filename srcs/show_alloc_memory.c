@@ -6,11 +6,33 @@
 /*   By: alagroy- <alagroy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/08 17:28:12 by alagroy-          #+#    #+#             */
-/*   Updated: 2021/04/09 15:12:50 by alagroy-         ###   ########.fr       */
+/*   Updated: 2021/04/15 15:27:28 by alagroy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft_malloc.h"
+
+static void					sort_zones(t_zone **zones)
+{
+	t_zone	*tmp;
+	size_t	i;
+	size_t	j;
+	size_t	size;
+
+	size = *(uint64_t *)zones / ZONE_SIZE;
+	j = 0;
+	while (++j < size)
+	{
+		i = 0;
+		while (++i < size - j - 1 && zones[i + 1])
+			if (zones[i] > zones[i + 1])
+			{
+				tmp = zones[i + 1];
+				zones[i + 1] = zones[i];
+				zones[i] = tmp;
+			}
+	}
+}
 
 void						print_addr(void *ptr)
 {
@@ -31,7 +53,7 @@ void						print_addr(void *ptr)
 	write(1, addr, 18);
 }
 
-void						display_block(t_block *block)
+static void					display_block(t_block *block)
 {
 	print_addr(block + 1);
 	ft_putstr(" - ");
@@ -70,7 +92,7 @@ static unsigned long long	display_zone(t_zone *zone)
 	return (total);
 }
 
-void						show_alloc_memory(void)
+void						show_alloc_mem(void)
 {
 	t_zone				**zone;
 	t_zone				**end;
@@ -80,8 +102,9 @@ void						show_alloc_memory(void)
 	i = 0;
 	total = 0;
 	zone = g_malloc.zones;
+	sort_zones(zone);
 	end = (void *)zone + *(size_t *)zone;
-	while (zone[++i] && zone + i < end)
+	while (zone + i < end && zone[++i])
 		total += display_zone(zone[i]);
 	ft_putstr("Total : ");
 	ft_putull(total);
