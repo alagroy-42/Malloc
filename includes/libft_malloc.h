@@ -20,7 +20,7 @@
 # include <sys/resource.h>
 
 # define TINY  4096
-# define SMALL 4 * TINY
+# define SMALL 10 * TINY
 # define LARGE SMALL + 1
 # define NB_ALLOCT 250
 # define NB_ALLOCS 100

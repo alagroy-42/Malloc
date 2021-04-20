@@ -67,7 +67,7 @@ $(OBJ_PATH):
 	mkdir $@
 
 $(OBJ): $(OBJ_PATH)%.o: %.c $(HEADER) Makefile
-	$(CC) $(CFLAGS) -I$(INCLUDES) -c $< -o $@
+	$(CC) $(CFLAGS) -I$(INCLUDES) -fPIC -c $< -o $@
 	printf "\033[0;32m[libft] Compilation [$<]                 \r\033[0m"
 
 clean:

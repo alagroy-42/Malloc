@@ -26,7 +26,7 @@ void	*mmap_safe(size_t size)
 	if (!(ptr = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE
 				| MAP_ANONYMOUS, -1, 0)))
 		return (NULL);
-	ft_bzero(ptr, size);
+	// ft_bzero(ptr, size);
 	return (ptr);
 }
 
@@ -78,6 +78,7 @@ int		init_malloc(size_t size)
 	g_malloc.rlimit = limit.rlim_cur;
 	if (!(g_malloc.zones = mmap_safe(g_malloc.pagesize)))
 		return (EXIT_FAILURE);
+	ft_bzero(g_malloc.zones, g_malloc.pagesize);
 	*(g_malloc.zones) = (t_zone *)g_malloc.pagesize;
 	if (!(create_zone(size)))
 		return (EXIT_FAILURE);

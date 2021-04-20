@@ -46,6 +46,7 @@ static int		extend_g_zones(void)
 		g_malloc.zones = old_zones;
 		return (EXIT_FAILURE);
 	}
+	ft_bzero(g_malloc.zones, size + g_malloc.pagesize);
 	ft_memcpy(g_malloc.zones, old_zones, size);
 	*(uint64_t *)g_malloc.zones = size + g_malloc.pagesize;
 	return (EXIT_SUCCESS);

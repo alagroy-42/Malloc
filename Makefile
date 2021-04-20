@@ -49,7 +49,7 @@ $(LIBFT):
 	make -C $(LIBFT_DIR)
 
 $(NAME): $(LIBFT) $(OBJ)
-	$(CC) $(CFLAGS) -shared $(OBJ) -L $(LIBFT_DIR) -lft -o $@
+	$(CC) $(CFLAGS) -shared -o $@ $(OBJ) -L $(LIBFT_DIR) -lft
 	printf "\n\033[0;32m[libft_malloc] Linking [OK]\n"
 	$(RM) $(LIBNAME)
 	ln -s $(NAME) $(LIBNAME)
